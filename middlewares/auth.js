@@ -26,7 +26,9 @@ module.exports = (req, res, next)=>{
 */
 
 module.exports = (req, res, next) => {
-    const authToken = req.headers['authorization'].split(' ')[0];
+    var authToken = req.headers['authorization']
+    if (authToken) authToken=authToken.split(' ')[0];
+    else return res.status(400).send("Você nao esta autenticado via token")
     //console.log(authToken);
     if (!authToken) return res.send('No token provied');
     jwt.verify(authToken, authConfig.secret, (err, data) => {

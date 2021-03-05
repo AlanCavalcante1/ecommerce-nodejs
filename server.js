@@ -6,6 +6,7 @@ const userRoutes = require('./routes/user');
 const adminRoutes = require('./routes/admin');
 
 const User = require('./models/user');
+const Address = require('./models/address');
 const Category = require('./models/category');
 const Product = require('./models/product');
 
