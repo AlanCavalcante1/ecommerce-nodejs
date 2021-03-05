@@ -9,7 +9,7 @@ const authMiddleware = require('../middlewares/auth');
 //router.use(authMiddleware)*/
 
 router.post('/sign_up', async (req, res)=>{
-    let {name, last_name, email, password, password_confirmation} = req.body.user;
+    let {name, last_name, email, password, password_confirmation, role} = req.body.user;
     if(password != password_confirmation) return res.status(400).json({err:'Password and Password confirmation are different'});
     const usedEmail = await UserSchema.findOne({email: email});
     console.log(usedEmail);
@@ -19,7 +19,8 @@ router.post('/sign_up', async (req, res)=>{
             name,
             last_name,
             email, 
-            password
+            password,
+            role
         });
 
         const {street, number, neighborhood, city, state} = req.body.user.address;
@@ -49,14 +50,14 @@ router.post('/sign_up', async (req, res)=>{
 
 router.post('/login', async (req,res)=>{
     const {email, password} = req.body.user;
-    const user = await (await UserSchema.getUserByEmail(email))//.populate('address')
-    //console.log(user);
+    const user = await UserSchema.getUserByEmail(email)//.populate('address')
     if (user && email == user.email){
         const rigt_password = await bcrypt.compare(password, user.password);
-        console.log(rigt_password);
+        //console.log(rigt_password);
         if (rigt_password){
+            //console.log(user.role)
             //console.log(`SECRET : ${authConfig.secret}`);
-            const token = jwt.sign({id: user.id}, authConfig.secret, {
+            const token = jwt.sign({id: user.id, role: user.role}, authConfig.secret, {
                 expiresIn: "24h" //it will be expired after 1 days
             });
             return res.status(200).send({user, token});
@@ -77,7 +78,9 @@ router.get('/user/address', authMiddleware, async (req,res)=>{
     return res.status(200).json(address);
 })
 
-router.get('/user', async(req,res)=>{
+router.get('/user', authMiddleware, async(req,res)=>{
+    //console.log(req);
+    if (req.userRole != 'admin') return res.status(403).send("Voce nao tem permissao para visualizar essa rota")
     const Users = await UserSchema.find();
     return res.status(200).json(Users);
 })
