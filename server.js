@@ -3,8 +3,11 @@ const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const userRoutes = require('./routes/user');
+const adminRoutes = require('./routes/admin');
 
 const User = require('./models/user');
+const Category = require('./models/category');
+const Product = require('./models/product');
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
@@ -22,6 +25,7 @@ app.get('/',(req,res)=>{
 })
 
 app.use('/', userRoutes);
+app.use('/', adminRoutes);
 
 app.listen(3000, ()=>{
     console.log("Server ligado")

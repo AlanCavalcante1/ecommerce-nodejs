@@ -5,13 +5,15 @@ const UserSchema = new mongoose.Schema({
     name: {type: String, required: [true, 'User name required']},
     last_name: {type: String, required: [true, 'Last name required']},
     email: {type: String, unique: true , lowercase: true, required: [true, 'Email required']},
-    password: {type: String, required: [true, 'Password required']},
+    password: {type: String, select: false, required: [true, 'Password required']},
     address: String,
     createdAt: {type: Date, default: Date.now}
 })
 
 
 var User = module.exports = mongoose.model('user', UserSchema);
+
+
 // // Eperson Away
 // UserSchema.pre('save', async function(next) {
 //     console.log("Entrou")
@@ -44,9 +46,7 @@ module.exports.hashPassword = async (password)=>{
 module.exports.findEmail = async (email)=>{
     try {
         const email_used = await User.findOne({email});
-        //console.log(email_used);
         if(email_used) {
-            //console.log("email achado")
             return true
         };
         return false;
@@ -58,12 +58,10 @@ module.exports.findEmail = async (email)=>{
 
 module.exports.getUserByEmail= async (email)=>{
     try {
-        const user = await User.findOne({email});
+        const user = await User.findOne({email}).select('+password');
         //console.log(`GetUSer ${user}`);
         return user;
     } catch (error) {
         return undefined
     }
-
-
 }
