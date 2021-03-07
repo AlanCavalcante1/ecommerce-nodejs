@@ -2,8 +2,24 @@ const express = require('express');
 const router = express.Router();
 const Category = require('../models/category');
 const Product = require('../models/product');
-const User = require('../models/user');
 const authMiddleware = require('../middlewares/auth');
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: function(req, file, callback){
+        callback(null, './public/uploads/images');
+    },
+    filename: function(req, file, callback){
+        callback(null, Date.now()+'_'+file.originalname);
+    }
+})
+
+const upload = multer({
+    storage: storage,
+    limits: {
+        fieldSize: 1024*1024*3
+    }
+})
 
 router.use(authMiddleware);
 
@@ -24,7 +40,7 @@ router.post('/admin/category', async (req,res)=>{
     }
 })
 
-router.post('/admin/product', async(req, res)=>{
+router.post('/admin/product', upload.single('image') ,async(req, res)=>{
     const categoryId = req.body.product.category;
     //console.log(categoryId);
     const category = await Category.findById({_id: categoryId});
@@ -35,7 +51,7 @@ router.post('/admin/product', async(req, res)=>{
     console.log(used_product);
     if(!used_product){
         
-        const newProduct = new Product({name});
+        const newProduct = new Product({name, img: req.file.filename});
         newProduct.category = category;
         await newProduct.save();
 
