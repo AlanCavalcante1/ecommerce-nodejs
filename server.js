@@ -10,8 +10,8 @@ const Address = require('./models/address');
 const Category = require('./models/category');
 const Product = require('./models/product');
 
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
+app.use(express.urlencoded({extended: false}));
+app.use(express.json());
 
 var URL_of_mongodb = 'mongodb://localhost:27017/amazon'
 
