@@ -4,11 +4,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 //load database
-const connectToDatabase = require('./database/database');
-
-//routes
-const userRoutes = require('./routes/user');
-const adminRoutes = require('./routes/admin');
+const connectToDatabase = require('./database/connection');
 
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
@@ -16,13 +12,9 @@ app.use(express.json());
 //connect to database
 connectToDatabase(process.env.MONGODB_URL);
 
-app.get('/',(req,res)=>{
-    res.send("teste");
-})
-
-//set routes to use
-app.use('/', userRoutes);
-app.use('/', adminRoutes);
+//configure routes
+const routesGeneral = require('./routes/routesGeneral');
+routesGeneral(app);
 
 //listen to port
 app.listen(process.env.PORT, ()=>{
