@@ -60,13 +60,6 @@ class userController{
         }
     }
 
-    async address_from_user(req, res){
-        //console.log(req.userID);
-        const user = await  User.findById({_id: req.userID}).populate('address');
-        const address = user.address;
-        return res.status(200).json(address);
-    }
-
     async show_users(req, res){
         if (req.userRole != 'admin') return res.status(403).send("Voce nao tem permissao para visualizar essa rota")
         const users = await User.find();
