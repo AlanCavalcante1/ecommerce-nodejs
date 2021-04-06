@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const authConfig = require('../config/auth.json');
+const dotenv = require('dotenv');
+dotenv.config();
 
 module.exports = (req, res, next) => {
     var authToken = req.headers['authorization']
@@ -7,7 +8,7 @@ module.exports = (req, res, next) => {
     else return res.status(400).send("Você nao esta autenticado via token")
     //console.log(authToken);
     if (!authToken) return res.send('No token provied');
-    jwt.verify(authToken, authConfig.secret, (err, data) => {
+    jwt.verify(authToken, process.env.SECRET, (err, data) => {
         //console.log(`ERROR: ${err}`);
         if (err) return res.status(401).send({"error": "Token invalid"});
         /*req.toke = authToken;
