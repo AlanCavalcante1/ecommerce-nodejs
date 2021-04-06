@@ -10,7 +10,7 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 
 //connect to database
-connectToDatabase(process.env.MONGODB_URL);
+connectToDatabase(process.env.MONGODB_NAME);
 
 //configure routes
 const routesGeneral = require('./routes/routesGeneral');
