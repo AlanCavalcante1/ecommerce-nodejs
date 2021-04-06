@@ -2,7 +2,9 @@ const User = require('../models/user');
 const Address = require('../models/address');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const authConfig = require('../config/auth.json');
+const dotenv = require('dotenv');
+dotenv.config();
+const sendEmail = require('../config/userMailer');
 
 class userController{
     async sign_up(req, res){
@@ -33,6 +35,7 @@ class userController{
     
             await newUser.save();
             await newAddress.save();
+            sendEmail.sendEmail(email);
     
             return res.status(201).json(newUser);
             //return res.status(201).send({User, 't': req.userId});       
@@ -47,7 +50,7 @@ class userController{
         if (user && email == user.email){
             const rigt_password = await bcrypt.compare(password, user.password);
             if (rigt_password){
-                const token = jwt.sign({id: user.id, role: user.role}, authConfig.secret, {
+                const token = jwt.sign({id: user.id, role: user.role}, process.env.SECRET, {
                     expiresIn: "24h" //it will be expired after 1 days
                 });
                 return res.status(200).send({user, token});
@@ -64,6 +67,13 @@ class userController{
         if (req.userRole != 'admin') return res.status(403).send("Voce nao tem permissao para visualizar essa rota")
         const users = await User.find();
         return res.status(200).json(users);
+    }
+
+    async delete_account(req, res){
+        const id = req.query.id;
+        const user_deleted = await User.findByIdAndDelete(id);
+        if (!user_deleted) return res.status(404).json({message: "User not found"});
+        return res.status(200).json({message: "user deleted", user_deleted});
     }
 
 }
