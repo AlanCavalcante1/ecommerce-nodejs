@@ -1,0 +1,39 @@
+version: '3'
+services: 
+  app:
+    container_name: 'docker-node-mongo' #nome_container
+    restart: always #se falhar ele liga denovo
+    build: . #controi um imagem de acordo com nosso Dockerfile(?)
+    ports: 
+      - 3000:3000
+    environment:
+      NODE_ENV: development
+    depends_on:
+      - mongodb
+    links: 
+      - mongodb
+
+  mongodb:
+    container_name: mongodb
+    image: mongo #definimos a imgem aqui e na outra nao, pois a outra vai ter a imagem do nosso dockerfile
+    volumes: 
+      - /usr/src/app
+    ports: 
+      - 27017:27017
+    restart: unless-stopped
+
+
+
+# docker-compose up (add -d para rodar em background)
+#docker-compose up down (stop networking || qual a diferencao de control C e Down)
+# same as
+#docker run -p 80:4000 -v $(pwd):/site bretfisher/jekyll-serve
+#
+#services:
+#  jekyll:
+#    image: bretfisher/jekyll-serve
+#    volumes:
+#      - .:/site
+#    ports:
+#      - '80:4000'
+      
